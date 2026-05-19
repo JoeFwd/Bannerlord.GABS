@@ -38,7 +38,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lib.GAB" Version="0.1.0" />
+    <!-- Local source reference so we can iterate on Lib.GAB's exception handling
+         (specifically ToolRegistry's catch) without going through NuGet publish. -->
+    <ProjectReference Include="D:\Bannerlord\Tools\Lib.GAB\Lib.GAB\Lib.GAB.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" IncludeAssets="compile" />
     <ProjectReference Include="..\Bannerlord.GABS.Generators\Bannerlord.GABS.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>

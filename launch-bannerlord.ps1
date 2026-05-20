@@ -13,9 +13,9 @@ if (Test-Path $configPath) {
 }
 
 # Launch the game
-$gameDir = "C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\bin\Win64_Shipping_Client"
-$exe = Join-Path $gameDir "Bannerlord.BLSE.Standalone.exe"
-$modules = "_MODULES_*Bannerlord.Harmony*Bannerlord.ButterLib*Bannerlord.UIExtenderEx*Bannerlord.MBOptionScreen*Bannerlord.GABS*Native*SandBoxCore*CustomBattle*Sandbox*StoryMode*_MODULES_"
+$gameDir = "D:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord-v1.3\bin\Win64_Shipping_Client"
+$exe = Join-Path $gameDir "Bannerlord.exe"
+$modules = "_MODULES_*Bannerlord.Harmony*Bannerlord.ButterLib*Bannerlord.UIExtenderEx*Bannerlord.MBOptionScreen*Bannerlord.GABS*Native*SandBoxCore*CustomBattle*Sandbox*StoryMode*DellarteDellaGuerra.Core*DellarteDellaGuerra*DellarteDellaGuerraMap*DellarteDellaGuerraScenes*_MODULES_"
 
 Set-Location $gameDir
-& $exe /singleplayer $modules
+& $exe /singleplayer /no_watchdog $modules

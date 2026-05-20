@@ -156,9 +156,7 @@ public partial class GauntletUITools
     {
         return MainThreadDispatcher.EnqueueAsync<object>(() =>
         {
-            try
-            {
-                var screen = ScreenManager.TopScreen;
+            var screen = ScreenManager.TopScreen;
                 if (screen == null)
                     return new { error = "No active screen" };
 
@@ -354,12 +352,6 @@ public partial class GauntletUITools
                     /// Movie name where the widget was found
                     movie = foundMovie,
                 };
-
-            }
-            catch (Exception ex)
-            {
-                return new { error = $"Click failed: {ex.Message}" };
-            }
         });
     }
 
@@ -371,14 +363,22 @@ public partial class GauntletUITools
 
         if (handleClick != null)
         {
-            handleClick.Invoke(widget, null);
+            // CreateDelegate produces a typed Action — calling it directly avoids
+            // MethodInfo.Invoke's TargetInvocationException wrapper, so exceptions
+            // propagate identically to a real mouse click and the debugger lands
+            // at the actual throw site with variables in scope.
+            var del = (Action)Delegate.CreateDelegate(typeof(Action), widget, handleClick);
+            del();
         }
         else
         {
-            // Fallback: fire EventFired directly
             var eventFired = widgetType.GetMethod("EventFired",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            eventFired?.Invoke(widget, ["Click", Array.Empty<object>()]);
+            if (eventFired != null)
+            {
+                var del = (Action<string, object[]>)Delegate.CreateDelegate(typeof(Action<string, object[]>), widget, eventFired);
+                del("Click", Array.Empty<object>());
+            }
         }
     }
 

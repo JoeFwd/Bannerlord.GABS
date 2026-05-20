@@ -37,10 +37,29 @@
     <BUTRModuleLoaderVersion>1.0.1.50</BUTRModuleLoaderVersion>
   </PropertyGroup>
 
+  <!-- Maps Bannerlord.GABS's BUTR config schema (Stable_Debug, Beta_Debug, ...) to
+       Lib.GAB's plain Debug/Release configs. Anything containing "Release" goes to
+       Release; everything else (Debug, Stable_Debug, Beta_Debug, ...) goes to Debug. -->
+  <PropertyGroup>
+    <LibGabConfig Condition="$(Configuration.Contains('Release'))">Release</LibGabConfig>
+    <LibGabConfig Condition="!$(Configuration.Contains('Release'))">Debug</LibGabConfig>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- Local source reference so we can iterate on Lib.GAB's exception handling
-         (specifically ToolRegistry's catch) without going through NuGet publish. -->
-    <ProjectReference Include="D:\Bannerlord\Tools\Lib.GAB\Lib.GAB\Lib.GAB.csproj" />
+         (specifically ToolRegistry's catch) without going through NuGet publish.
+
+         Pin Platform/Configuration explicitly so MSBuild's ProjectReference resolution
+         doesn't inherit Bannerlord.GABS's x64 + BUTR config (Stable_Debug, Beta_Debug,
+         ...). Lib.GAB is a netstandard2.0 AnyCPU library with only Debug/Release configs.
+         Without these pins, Rider's MSBuild looks for the reference at
+         bin\x64\Stable_Debug\netstandard2.0\Lib.GAB.dll, which doesn't exist (the actual
+         output lands at bin\Stable_Debug\netstandard2.0\ — no x64). dotnet CLI happens
+         not to propagate Platform=x64 and works without these pins, but Rider does. -->
+    <ProjectReference Include="D:\Bannerlord\Tools\Lib.GAB\Lib.GAB\Lib.GAB.csproj">
+      <SetPlatform>Platform=AnyCPU</SetPlatform>
+      <SetConfiguration>Configuration=$(LibGabConfig)</SetConfiguration>
+    </ProjectReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" IncludeAssets="compile" />
     <ProjectReference Include="..\Bannerlord.GABS.Generators\Bannerlord.GABS.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>

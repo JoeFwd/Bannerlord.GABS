@@ -605,24 +605,75 @@ public partial class GauntletUITools
     private static List<MovieEntry> GetMovies(GauntletLayer layer)
     {
         var result = new List<MovieEntry>();
-#if v1313 || v1315
-            if (MovieIdentifiersField?.Invoke(layer) is { } enumerable)
+
+        // Newer Bannerlord versions (v1.3.13+) renamed `MoviesAndDataSources` to a private
+        // `_movieIdentifiers` field. The Harmony FieldRef at the top of this class is null
+        // when the field doesn't exist, so we can detect at runtime which API is available
+        // and avoid hard-coding it via conditional compilation symbols (which were proving
+        // unreliable when the build pipeline didn't propagate the BUTR SDK's version symbols).
+        //
+        // `GauntletMovieIdentifier` is referenced by reflection rather than by type name
+        // because GABS is compiled against the v1.2.12 reference assemblies, which don't
+        // contain that type — but it exists in the v1.3.x runtime DLLs.
+        if (MovieIdentifiersField != null)
+        {
+            if (MovieIdentifiersField.Invoke(layer) is { } enumerable)
             {
                 foreach (var item in enumerable)
                 {
-                    if (item is GauntletMovieIdentifier id)
-                        result.Add(new MovieEntry(id.MovieName, id.DataSource, id.Movie?.RootWidget));
+                    if (item == null) continue;
+                    var itemType = item.GetType();
+                    var movieName = itemType.GetProperty("MovieName")?.GetValue(item) as string;
+                    var dataSource = itemType.GetProperty("DataSource")?.GetValue(item);
+                    var movie = itemType.GetProperty("Movie")?.GetValue(item);
+                    Widget? rootWidget = null;
+                    if (movie != null)
+                        rootWidget = movie.GetType().GetProperty("RootWidget")?.GetValue(movie) as Widget;
+                    result.Add(new MovieEntry(movieName, dataSource, rootWidget));
                 }
             }
-#else
-        foreach (var tuple in layer.MoviesAndDataSources)
-        {
-            var movie = tuple.Item1;
-            var dataSource = tuple.Item2;
-            result.Add(new MovieEntry(movie?.MovieName, dataSource, movie?.RootWidget));
+            return result;
         }
-#endif
+
+        // Fall back to the older `MoviesAndDataSources` API via reflection so this method
+        // doesn't bind to a field/property the runtime may have removed (which would
+        // throw MissingFieldException as soon as the JIT touches this method).
+        var oldApi = typeof(GauntletLayer).GetProperty("MoviesAndDataSources")
+                     ?? (System.Reflection.MemberInfo?) typeof(GauntletLayer).GetField("MoviesAndDataSources");
+        if (oldApi is System.Reflection.PropertyInfo prop)
+        {
+            if (prop.GetValue(layer) is System.Collections.IEnumerable enumerable)
+                AddTuples(enumerable, result);
+        }
+        else if (oldApi is System.Reflection.FieldInfo field)
+        {
+            if (field.GetValue(layer) is System.Collections.IEnumerable enumerable)
+                AddTuples(enumerable, result);
+        }
+
         return result;
+    }
+
+    private static void AddTuples(System.Collections.IEnumerable enumerable, List<MovieEntry> result)
+    {
+        foreach (var entry in enumerable)
+        {
+            if (entry == null) continue;
+            var entryType = entry.GetType();
+            var item1 = entryType.GetField("Item1")?.GetValue(entry)
+                        ?? entryType.GetProperty("Item1")?.GetValue(entry);
+            var item2 = entryType.GetField("Item2")?.GetValue(entry)
+                        ?? entryType.GetProperty("Item2")?.GetValue(entry);
+            string? movieName = null;
+            Widget? rootWidget = null;
+            if (item1 != null)
+            {
+                var t = item1.GetType();
+                movieName = t.GetProperty("MovieName")?.GetValue(item1) as string;
+                rootWidget = t.GetProperty("RootWidget")?.GetValue(item1) as Widget;
+            }
+            result.Add(new MovieEntry(movieName, item2, rootWidget));
+        }
     }
 
     private static Widget? FindButtonByText(Widget root, string text)

@@ -6,6 +6,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.GABS", "src\Bann
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.GABS.Generators", "src\Bannerlord.GABS.Generators\Bannerlord.GABS.Generators.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib.GAB", "lib\Lib.GAB\Lib.GAB\Lib.GAB.csproj", "{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Stable_Debug|x64 = Stable_Debug|x64
@@ -22,6 +24,14 @@ Global
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Beta_Debug|x64.Build.0 = Debug|Any CPU
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Beta_Release|x64.ActiveCfg = Release|Any CPU
 		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Beta_Release|x64.Build.0 = Release|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Stable_Debug|x64.ActiveCfg = Debug|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Stable_Debug|x64.Build.0 = Debug|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Stable_Release|x64.ActiveCfg = Release|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Stable_Release|x64.Build.0 = Release|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Beta_Debug|x64.ActiveCfg = Debug|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Beta_Debug|x64.Build.0 = Debug|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Beta_Release|x64.ActiveCfg = Release|Any CPU
+		{852C2A59-6BA2-4FAB-9A59-03CAB034E2FF}.Beta_Release|x64.Build.0 = Release|Any CPU
 		{FE11F2F8-6EE2-4021-81B7-7BE5B8580B58}.Stable_Debug|x64.ActiveCfg = Stable_Debug|x64
 		{FE11F2F8-6EE2-4021-81B7-7BE5B8580B58}.Stable_Debug|x64.Build.0 = Stable_Debug|x64
 		{FE11F2F8-6EE2-4021-81B7-7BE5B8580B58}.Stable_Release|x64.ActiveCfg = Stable_Release|x64

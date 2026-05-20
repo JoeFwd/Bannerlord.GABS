@@ -1,0 +1,4 @@
+[submodule "lib/Lib.GAB"]
+	path = lib/Lib.GAB
+	url = https://github.com/JoeFwd/Lib.GAB
+	branch = throw-error-with-attached-debugger
